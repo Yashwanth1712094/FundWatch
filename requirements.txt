@@ -1,0 +1,8 @@
+sqlalchemy
+bcrypt
+psycopg2
+requests
+streamlit
+fastapi
+uvicorn
+python-multipartss
