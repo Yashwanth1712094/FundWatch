@@ -5,6 +5,7 @@ This application provides comprehensive details about mutual fund schemes, assis
 
 
 ## Installation
+```bash
 
 1.python3.10 -m venv venv
 2.source venv/bin/activate
@@ -14,8 +15,9 @@ This application provides comprehensive details about mutual fund schemes, assis
 #Activate the virtual environments in both the terminals
   
 4.python main.py     (in terminal 1)
-5.streamlit run frontend/app.py    (in terminal 2)   
+5.streamlit run frontend/app.py    (in terminal 2)
 
+```
 
 ## Folder Strutchure
 ```bash
