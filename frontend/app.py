@@ -10,6 +10,6 @@ page = st.sidebar.radio("Choose a page", ['login_page', 'investment_page', 'fund
 if page == 'login_page':
     login_page.main()
 elif page == 'investment_page':
-    investment_page.show_investment()
+    investment_page.main()
 elif page == 'fund_moniter_page':
     fund_moniter_page.show_fund_monter()

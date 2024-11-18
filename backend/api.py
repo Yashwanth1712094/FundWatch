@@ -57,7 +57,8 @@ def get_different_schemes(family_fund):
         scheme_list=[]
         for i in scheme_details:
             scheme={}
-            scheme['scheme_id']=i.scheme_code
+            scheme['scheme_id']=i.stock_id
+            scheme['scheme_code']=i.scheme_code
             scheme['scheme_name']=i.stock_name
             scheme['price']=i.curr_stock_value
             scheme_list.append(scheme)
