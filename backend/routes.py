@@ -58,9 +58,10 @@ def invest(email : str=Form(...),scheme_code : str=Form(...),scheme_name : str=F
 
 
 @app.post('/My_profile')
-def my_profile(email):
+def my_profile(email :str=Form(...)):
     try:
         res1,res2=api.my_profle(email)
+
     except Exception as e:
         raise HTTPException(status_code=422,detail=str(e))
     

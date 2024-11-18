@@ -16,7 +16,6 @@ def show_investment(selected_fund_family):
     scheme_id_list=[]
     for i in res.json()['response']:
         scheme_id_list.append(str(i['scheme_id']))
-    print(scheme_id_list)
     df_schemes = pd.DataFrame(res.json()['response'])
 
     st.subheader("List of All Schemes")
@@ -30,7 +29,6 @@ def show_investment(selected_fund_family):
         if quantity:
             total_amount=int(quantity)*res.json()['response'][ind]['price']
             st.write(f"Amount to be paid:{total_amount}")
-            st.write("click submit to buy stocks")
             res=res.json()['response'][ind]
             if st.button("submit"):
                 res=requests.post(INVEST_URL,data={'email':global_var.get_variable(),"scheme_code":res['scheme_code'],'scheme_name':res['scheme_name'],
@@ -43,9 +41,7 @@ def show_investment(selected_fund_family):
                 st.write("please press submit to submit")
         else:
             st.write("enter quantity to procees")
-    else:
-        print("enter scheme id to procees")
-   
+    else:   
         pass
     
 def main():

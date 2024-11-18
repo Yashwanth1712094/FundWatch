@@ -2,10 +2,39 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, func,Co
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 import bcrypt
-from sqlalchemy import event
-
+from sqlalchemy import event,update
 
 Base = declarative_base()
+
+
+
+
+
+import os
+
+def setup_postgres():
+    # Enable and start the PostgreSQL service
+    os.system("sudo systemctl enable postgresql")
+    os.system("sudo systemctl start postgresql")
+    print("PostgreSQL service started and enabled.")
+
+    # Create a PostgreSQL user
+    create_user_command = """sudo -i -u postgres psql -c "CREATE USER my_user WITH PASSWORD 'password' SUPERUSER;" """
+    os.system(create_user_command)
+    print("User 'my_user' created.")
+
+    # Create a PostgreSQL database
+    create_db_command = """sudo -i -u postgres psql -c "CREATE DATABASE bhive;" """
+    os.system(create_db_command)
+    print("Database 'bhive' created.")
+
+    # Grant privileges to the user
+    grant_privileges_command = """sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE bhive TO my_user;" """
+    os.system(grant_privileges_command)
+    print("Privileges granted to 'my_user' on 'bhive' database.")
+
+setup_postgres()
+
 
 
 # Define the User Table model
@@ -19,28 +48,18 @@ class User(Base):
 
 
 
-# CREATE TABLE Stocks (
-#     stock_id SERIAL PRIMARY KEY,              -- Auto-incrementing ID for each stock entry
-#     email VARCHAR(255),                       -- Foreign key reference to the Users table
-#     stock_name VARCHAR(100),                  -- Name of the stock (e.g., 'AAPL', 'GOOG')
-#     stock_value DECIMAL(10, 2),               -- Current value of the stock per share (e.g., $150.25)
-#     initial_value DECIMAL(10, 2),             -- Initial value at the time of purchase (e.g., $120.50)
-#     quantity INT,                             -- Number of shares the user holds
-#     purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Date of purchase
-#     FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
-# );
 
 
 class User_Fund(Base):
 
     __tablename__='user_fund'
-    stock_id = Column(Integer, primary_key=True)
-    email = Column(String(100), unique=True, nullable=False)
-    scheme_code=Column(String(200), unique=True, nullable=False)
-    stock_name = Column(String(200), unique=True, nullable=False)
+    stock_id = Column(Integer, primary_key=True,unique=True,nullable=False)
+    email = Column(String(100), nullable=False)
+    scheme_code=Column(String(200), nullable=False)
+    stock_name = Column(String(200),nullable=False)
     initial_stock_value=Column(Integer, unique=True, nullable=False)
-    current_value=Column(Integer, unique=True, nullable=False)
-    quantity=Column(Integer, unique=True, nullable=False)
+    current_value=Column(Integer, nullable=False)
+    quantity=Column(Integer, nullable=False)
     gain = Column(Integer, Computed('(current_value - initial_stock_value) * quantity', persisted=True))
     purchased_at = Column(DateTime, default=func.now())
 
@@ -94,10 +113,37 @@ def insert_fund_family_details(scheme_Code,stock_name,curr_stock_value,scheme_ty
 
 @event.listens_for(Family_Fund_Details, 'after_update')
 def update_user_table_on_family_fund_update(mapper, connection, target):
-    if target.scheme_Code:  # Check if 'b' has been updated
+    if target.scheme_code:  # Check if 'b' has been updated
         connection.execute(
-            User_Fund.__tablename__.update()
-            .where(User_Fund.scheme_Code == target.scheme_Code)  # Update Table2 where 'a' matches
+            update(User_Fund)
+            .where(User_Fund.scheme_code == target.scheme_code)  # Update Table2 where 'a' matches
             .values(current_value=target.curr_stock_value)  # Set 'b' to the updated value of Table1's 'b'
         )
       
+
+
+import requests
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def preprocess():
+    url= "https://latest-mutual-fund-nav.p.rapidapi.com/latest"
+    querystring = {"Scheme_Type":"Open"}
+
+    headers = {
+	    "x-rapidapi-key": "b4e8a7b16cmsheeec900dd03cf70p1f3a47jsn029b022b43a4",
+	    "x-rapidapi-host": "latest-mutual-fund-nav.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+
+    response=response.json()
+    for scheme in response:
+        insert_fund_family_details(str(scheme['Scheme_Code']),scheme['Scheme_Name'],
+                                            scheme['Net_Asset_Value'],scheme['Scheme_Type'],
+                                            scheme['Mutual_Fund_Family'])
+        
+    
+preprocess()
+scheduler=BackgroundScheduler()
+scheduler.add_job(preprocess,'cron',minute='*/59')

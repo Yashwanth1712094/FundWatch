@@ -83,7 +83,7 @@ def invest(email,scheme_code,scheme_name,price,quantity):
 
 def my_profle(email):
     try:
-        profile_details=session.query(User).filter(User.email == email).all()
+        profile_details=session.query(User_Fund).filter(User_Fund.email == email).all()
         scheme_list=[]
         total_investment=0
         current_investment_value=0
@@ -100,6 +100,7 @@ def my_profle(email):
             current_investment_value+=i.current_value*i.quantity
             scheme_list.append(scheme)
         total_gain=current_investment_value-total_investment
+        
         return scheme_list,total_gain
     except Exception as e:
         session.rollback()

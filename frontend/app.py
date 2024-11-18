@@ -12,4 +12,4 @@ if page == 'login_page':
 elif page == 'investment_page':
     investment_page.main()
 elif page == 'fund_moniter_page':
-    fund_moniter_page.show_fund_monter()
+    fund_moniter_page.main()
