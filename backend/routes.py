@@ -1,9 +1,13 @@
+'''
+This file contains all api end points and routes
+'''
 import os
 from fastapi import APIRouter,Form,File,UploadFile,HTTPException,status
 from starlette.responses import FileResponse
 from backend import api
 from fastapi.responses import JSONResponse
 app=APIRouter()
+
 
 @app.post('/Login')
 def login(email: str=Form(...),password : str=Form(...)):
@@ -24,7 +28,7 @@ def register(email: str=Form(...),password : str=Form(...)):
 
     return JSONResponse(content={"response": res}, status_code=status.HTTP_200_OK)
 
-
+#This api is used to fetch all the fund famils from Family_Fund database
 @app.post('/Get_Fund_Houses')
 def get_fund_houses():
     try:
@@ -34,6 +38,9 @@ def get_fund_houses():
         raise HTTPException(status_code=422,detail=str(e))
 
     return JSONResponse(content={"response": res}, status_code=status.HTTP_200_OK)
+
+
+#This api is used to fetch all the schemes in selected Family_Fund from family fund database 
 
 @app.post('/Get_schemes')
 def get_schemes(fund_house:str=Form(...)):
@@ -47,6 +54,8 @@ def get_schemes(fund_house:str=Form(...)):
     return JSONResponse(content={"response": res}, status_code=status.HTTP_200_OK)
 
 
+#This api is used to select the schemes and invest in the schemes 
+
 @app.post('/Invest')
 def invest(email : str=Form(...),scheme_code : str=Form(...),scheme_name : str=Form(...),price :int=Form(...),quantity : int=Form(...)):
     try:
@@ -56,6 +65,8 @@ def invest(email : str=Form(...),scheme_code : str=Form(...),scheme_name : str=F
     
     return JSONResponse(content={"response": res}, status_code=status.HTTP_200_OK)
 
+
+# This api is used or the tracting of a user portfolio
 
 @app.post('/My_profile')
 def my_profile(email :str=Form(...)):

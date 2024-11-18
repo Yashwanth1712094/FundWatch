@@ -1,8 +1,15 @@
+'''
+This python file contains all the Database transactions
+'''
+
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, func,Computed
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 import bcrypt
 from sqlalchemy import event,update
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 Base = declarative_base()
 
@@ -10,7 +17,7 @@ Base = declarative_base()
 
 
 
-import os
+#This function helps in setting up of the postgres and database
 
 def setup_postgres():
     # Enable and start the PostgreSQL service
@@ -37,7 +44,7 @@ setup_postgres()
 
 
 
-# Define the User Table model
+# User class keeps the track of user email and password credentials
 class User(Base):
     __tablename__ = 'user_cred'
 
@@ -49,7 +56,7 @@ class User(Base):
 
 
 
-
+#User Fund keeps the track of the user investments and portfolio
 class User_Fund(Base):
 
     __tablename__='user_fund'
@@ -64,6 +71,8 @@ class User_Fund(Base):
     purchased_at = Column(DateTime, default=func.now())
 
 
+
+#Family Fund class keeps the track of all schemes
 class Family_Fund_Details(Base):
     __tablename__='family_fund_details'
     stock_id = Column(Integer, primary_key=True)
@@ -86,6 +95,7 @@ Base.metadata.create_all(engine)
 print("Database and tables are created!")
 
 
+#This function will update the latest NAV of a scheme and add if there is any new scheme in Family_fund user
 def insert_fund_family_details(scheme_Code,stock_name,curr_stock_value,scheme_type,mutual_fund_family):
     try:
         existing_scheme_code = session.query(Family_Fund_Details).filter(Family_Fund_Details.scheme_code == scheme_Code).first()
@@ -96,9 +106,6 @@ def insert_fund_family_details(scheme_Code,stock_name,curr_stock_value,scheme_ty
             
             return
         else:
-            # new_user = Family_Fund_Details(scheme_code=scheme_Code,stock_name=stock_name,curr_stock_value=curr_stock_value,
-            #                                scheme_type=scheme_type,mutual_fund_family=mutual_fund_family)
-            
             new_user=Family_Fund_Details(scheme_code=scheme_Code,stock_name=stock_name,curr_stock_value=curr_stock_value,
                                          scheme_type=scheme_type,mutual_fund_family=mutual_fund_family)
             session.add(new_user)
@@ -110,7 +117,7 @@ def insert_fund_family_details(scheme_Code,stock_name,curr_stock_value,scheme_ty
     finally:
         session.close
 
-
+#This functon updates the NAV value as soon as it is updated in family fund table
 @event.listens_for(Family_Fund_Details, 'after_update')
 def update_user_table_on_family_fund_update(mapper, connection, target):
     if target.scheme_code:  # Check if 'b' has been updated
@@ -127,13 +134,14 @@ import requests
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
 
+#This functions runs for every 1 hour using aps scheduler and updates the family und table with latest NAV values
 def preprocess():
-    url= "https://latest-mutual-fund-nav.p.rapidapi.com/latest"
+    url= os.getenv("RAPID_API_URL")
     querystring = {"Scheme_Type":"Open"}
 
     headers = {
-	    "x-rapidapi-key": "b4e8a7b16cmsheeec900dd03cf70p1f3a47jsn029b022b43a4",
-	    "x-rapidapi-host": "latest-mutual-fund-nav.p.rapidapi.com"
+	    "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
+	    "x-rapidapi-host": os.getenv("RAPID_API_HOST")
     }
 
     response = requests.get(url, headers=headers, params=querystring)

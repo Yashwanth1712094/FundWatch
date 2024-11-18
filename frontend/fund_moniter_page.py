@@ -1,3 +1,7 @@
+'''
+This file is used to monter the portfolo of a user
+'''
+
 import streamlit as st
 import sys
 import requests

@@ -1,3 +1,6 @@
+'''
+THis file is used for login and register'''
+
 import streamlit as st
 import requests
 import sys

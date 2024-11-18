@@ -1,9 +1,13 @@
+'''
+This python file contains all the core logic of the python api calls
+'''
+
 from backend.database import Family_Fund_Details,User_Fund,User,session
 from sqlalchemy import distinct
 import bcrypt
 
 
-
+# This function is used to login the user
 def login(email, password):
     try:
         # Fetch the user by username
@@ -20,6 +24,8 @@ def login(email, password):
     except Exception as e:
         return f"Error: {e}"
 
+
+#This functon is used for the signup of the user
 def signup(email, password):
     try:
         # Check if the user already exists
@@ -39,6 +45,8 @@ def signup(email, password):
         session.rollback()
         print(f"Error: {e}")
     
+
+#This function is used to fetch all the fund famils from Family_Fund database
 def unique_fund_family_details():
     try:
         unique_categories = session.query(distinct(Family_Fund_Details.mutual_fund_family)).all()
@@ -51,6 +59,7 @@ def unique_fund_family_details():
         print(f"Error: {e}")
 
 
+#This function is used to fetch all the schemes in selected Family_Fund from family fund database 
 def get_different_schemes(family_fund):
     try:
         scheme_details=session.query(Family_Fund_Details).filter(Family_Fund_Details.mutual_fund_family == family_fund).all()
@@ -68,7 +77,7 @@ def get_different_schemes(family_fund):
         print(f"Error: {e}")
 
 
-
+#This function is used to select the schemes and invest in the schemes 
 def invest(email,scheme_code,scheme_name,price,quantity):
     try:
         new_user=User_Fund(email=email,scheme_code=scheme_code,stock_name=scheme_name, initial_stock_value=price,current_value=price,
@@ -81,6 +90,7 @@ def invest(email,scheme_code,scheme_name,price,quantity):
         print(f"Error: {e}")
 
 
+# This function is used or the tracting of a user portfolio
 def my_profle(email):
     try:
         profile_details=session.query(User_Fund).filter(User_Fund.email == email).all()

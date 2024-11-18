@@ -1,3 +1,7 @@
+'''
+Main python file to run the app
+'''
+
 import uvicorn
 from fastapi import FastAPI
 from backend import routes

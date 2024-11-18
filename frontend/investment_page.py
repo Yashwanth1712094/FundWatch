@@ -1,3 +1,6 @@
+'''
+This file is used for fetching schemes and making investments
+'''
 import streamlit as st
 import sys
 import requests

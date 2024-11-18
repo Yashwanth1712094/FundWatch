@@ -1,3 +1,7 @@
+'''
+This file maintain the logic to navigate between diferent pages
+'''
+
 # app.py
 import streamlit as st
 import fund_moniter_page
