@@ -93,7 +93,7 @@ def insert_fund_family_details(scheme_Code,stock_name,curr_stock_value,scheme_ty
             existing_scheme_code.curr_stock_value=curr_stock_value
 
             session.commit()
-            print("scheme id {scheme_code} already exists updted the latest value ")
+            
             return
         else:
             # new_user = Family_Fund_Details(scheme_code=scheme_Code,stock_name=stock_name,curr_stock_value=curr_stock_value,
@@ -122,6 +122,7 @@ def update_user_table_on_family_fund_update(mapper, connection, target):
       
 
 
+
 import requests
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -142,7 +143,7 @@ def preprocess():
         insert_fund_family_details(str(scheme['Scheme_Code']),scheme['Scheme_Name'],
                                             scheme['Net_Asset_Value'],scheme['Scheme_Type'],
                                             scheme['Mutual_Fund_Family'])
-        
+    print("scheme id {scheme_code} already exists updted the latest value ")
     
 preprocess()
 scheduler=BackgroundScheduler()
