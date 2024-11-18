@@ -18,6 +18,7 @@ This application provides comprehensive details about mutual fund schemes, assis
 
 
 ## Folder Strutchure
+```bash
 
 ├── README.md      
 ├── __init__.py
@@ -36,3 +37,5 @@ This application provides comprehensive details about mutual fund schemes, assis
 │   └── login_page.py           <-  python file used for login and registration of user
 ├── main.py                     <-  Main python file to run the app
 └── requirements.txt            <-  Requirement file with list of libraries needed
+
+```
