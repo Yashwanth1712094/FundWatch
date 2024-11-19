@@ -136,16 +136,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 #This functions runs for every 1 hour using aps scheduler and updates the family und table with latest NAV values
 def preprocess():
+    print("preprocess started .please wait for server")
     url= os.getenv("RAPID_API_URL")
     querystring = {"Scheme_Type":"Open"}
-
     headers = {
 	    "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
 	    "x-rapidapi-host": os.getenv("RAPID_API_HOST")
     }
-
     response = requests.get(url, headers=headers, params=querystring)
-
     response=response.json()
     for scheme in response:
         insert_fund_family_details(str(scheme['Scheme_Code']),scheme['Scheme_Name'],
